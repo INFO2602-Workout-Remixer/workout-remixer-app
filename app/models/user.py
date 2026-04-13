@@ -1,14 +1,10 @@
-from sqlmodel import Field, SQLModel, Relationship
-from typing import Optional, List
+from sqlmodel import Field, SQLModel
+from typing import Optional
 from pydantic import EmailStr
 
-class UserBase(SQLModel):
+class User(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True)
     email: EmailStr = Field(index=True, unique=True)
     password: str
     role: str = ""
-
-class User(UserBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
-    routines: List["Routine"] = Relationship(back_populates="user")
-    workout_sessions: List["WorkoutSession"] = Relationship(back_populates="user")
