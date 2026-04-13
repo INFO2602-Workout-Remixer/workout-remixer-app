@@ -11,3 +11,4 @@ class UserBase(SQLModel,):
 
 class User(UserBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    routines: List["Routine"] = Relationship(back_populates="user")

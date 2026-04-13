@@ -4,7 +4,9 @@ from fastapi.staticfiles import StaticFiles
 from app.utilities.flash import get_flashed_messages
 from jinja2 import Environment, FileSystemLoader
 from app.config import get_settings
-
+from app.api import exercises, routines
+from app.api.exercises import router as exercises_router
+from app.api.routines import router as routines_router
 
 template_env = Environment(loader = FileSystemLoader("app/templates",), )
 template_env.globals['get_flashed_messages'] = get_flashed_messages
@@ -13,5 +15,7 @@ static_files = StaticFiles(directory="app/static")
 
 router = APIRouter(tags=["Jinja Based Endpoints"], include_in_schema=get_settings().env.lower() in ["dev","development"])
 api_router = APIRouter(tags=["API Endpoints"], prefix="/api")
+api_router.include_router(exercises_router)
+api_router.include_router(routines_router)
 
 from . import (index, login, register, admin_home, user_home, users, logout)
