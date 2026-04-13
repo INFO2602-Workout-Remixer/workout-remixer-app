@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.dependencies import SessionDep, AuthDep
 from app.models.exercise import Exercise
 from app.schemas.exercise import ExerciseCreate, ExerciseResponse
+from sqlmodel import select
 
 router = APIRouter(prefix="/exercises", tags=["Exercises"])
 

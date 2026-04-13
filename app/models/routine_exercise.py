@@ -1,5 +1,4 @@
 from sqlmodel import Field, SQLModel
-from typing import Optional
 
 class RoutineExercise(SQLModel, table=True):
     routine_id: int = Field(foreign_key="routine.id", primary_key=True)
