@@ -1,12 +1,26 @@
 from sqlmodel import SQLModel
-from typing import Optional
+from typing import Optional, List
+from app.schemas.exercise import ExerciseResponse
 
-class ExerciseCreate(SQLModel):
+class RoutineCreate(SQLModel):
     name: str
-    muscle_group: str
-    equipment: Optional[str] = None
-    youtube_url: Optional[str] = None
-    form_tips: Optional[str] = None
+    description: Optional[str] = None
+    is_public: bool = False
 
-class ExerciseResponse(ExerciseCreate):
+class RoutineResponse(SQLModel):
     id: int
+    name: str
+    description: Optional[str] = None
+    is_public: bool
+    is_favorite: bool
+    exercise_count: int
+
+class RoutineDetailResponse(RoutineResponse):
+    exercises: List[ExerciseResponse]
+
+class RoutineExerciseCreate(SQLModel):
+    exercise_id: int
+    sets: int
+    reps: int
+    rest_seconds: int
+    order: int

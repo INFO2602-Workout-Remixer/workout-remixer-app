@@ -13,6 +13,3 @@ class Routine(RoutineBase, table=True):
     user_id: int = Field(foreign_key="user.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
-    
-    # Relationships
-    user: "User" = Relationship(back_populates="routines")

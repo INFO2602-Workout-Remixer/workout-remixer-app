@@ -1,0 +1,10 @@
+from sqlmodel import Field, SQLModel
+from typing import Optional
+
+class RoutineExercise(SQLModel, table=True):
+    routine_id: int = Field(foreign_key="routine.id", primary_key=True)
+    exercise_id: int = Field(foreign_key="exercise.id", primary_key=True)
+    sets: int = Field(default=3)
+    reps: int = Field(default=10)
+    rest_seconds: int = Field(default=60)
+    order: int = Field(default=0)
