@@ -1,0 +1,259 @@
+{% extends "authenticated-base.html" %}
+
+{% block subpage_content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12 d-flex justify-content-between align-items-center">
+            <div>
+                <h2 class="fw-bold">Exercise Library</h2>
+                <p class="text-muted">Browse and manage exercises for your workouts</p>
+            </div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+                <span class="material-symbols-outlined me-1">add</span>
+                Add Exercise
+            </button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <input type="text" id="searchExercises" class="form-control" placeholder="Search exercises...">
+        </div>
+        <div class="col-md-3">
+            <select id="filterMuscleGroup" class="form-select">
+                <option value="">All Muscle Groups</option>
+                <option value="chest">Chest</option>
+                <option value="back">Back</option>
+                <option value="legs">Legs</option>
+                <option value="shoulders">Shoulders</option>
+                <option value="arms">Arms</option>
+                <option value="core">Core</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select id="filterEquipment" class="form-select">
+                <option value="">All Equipment</option>
+                <option value="barbell">Barbell</option>
+                <option value="dumbbell">Dumbbell</option>
+                <option value="bodyweight">Bodyweight</option>
+                <option value="machine">Machine</option>
+                <option value="cable">Cable</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset Filters</button>
+        </div>
+    </div>
+
+    <!-- Exercises Grid -->
+    <div class="row" id="exercisesGrid">
+        <div class="col-12 text-center py-5">
+            <div class="spinner-border text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Exercise Modal -->
+<div class="modal fade" id="addExerciseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Exercise</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addExerciseForm">
+                    <div class="mb-3">
+                        <label class="form-label">Exercise Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Muscle Group</label>
+                        <select class="form-select" name="muscle_group" required>
+                            <option value="chest">Chest</option>
+                            <option value="back">Back</option>
+                            <option value="legs">Legs</option>
+                            <option value="shoulders">Shoulders</option>
+                            <option value="arms">Arms</option>
+                            <option value="core">Core</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Equipment</label>
+                        <input type="text" class="form-control" name="equipment" placeholder="e.g., Barbell, Dumbbell, Bodyweight">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">YouTube URL (for form guide)</label>
+                        <input type="url" class="form-control" name="youtube_url" placeholder="https://youtube.com/watch?v=...">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Form Tips</label>
+                        <textarea class="form-control" name="form_tips" rows="3" placeholder="Key form cues for this exercise..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="saveExercise()">Save Exercise</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let allExercises = [];
+    
+    async function loadExercises() {
+        try {
+            const response = await fetch('/api/exercises');
+            allExercises = await response.json();
+            filterAndDisplayExercises();
+        } catch (error) {
+            console.error('Error loading exercises:', error);
+        }
+    }
+    
+    function filterAndDisplayExercises() {
+        const searchTerm = document.getElementById('searchExercises').value.toLowerCase();
+        const muscleGroup = document.getElementById('filterMuscleGroup').value;
+        const equipment = document.getElementById('filterEquipment').value;
+        
+        const filtered = allExercises.filter(ex => {
+            const matchesSearch = ex.name.toLowerCase().includes(searchTerm);
+            const matchesMuscle = !muscleGroup || ex.muscle_group === muscleGroup;
+            const matchesEquipment = !equipment || (ex.equipment && ex.equipment.toLowerCase().includes(equipment));
+            return matchesSearch && matchesMuscle && matchesEquipment;
+        });
+        
+        displayExercises(filtered);
+    }
+    
+    function displayExercises(exercises) {
+        const grid = document.getElementById('exercisesGrid');
+        
+        if (exercises.length === 0) {
+            grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No exercises found. Add your first exercise!</p></div>';
+            return;
+        }
+        
+        grid.innerHTML = exercises.map(ex => `
+            <div class="col-md-4 col-lg-3 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h6 class="card-title fw-bold">${escapeHtml(ex.name)}</h6>
+                        <span class="badge bg-primary mb-2">${ex.muscle_group}</span>
+                        ${ex.equipment ? `<span class="badge bg-secondary mb-2">${ex.equipment}</span>` : ''}
+                        <p class="card-text small text-muted mt-2">${ex.form_tips ? ex.form_tips.substring(0, 80) : 'No description available'}</p>
+                        ${ex.youtube_url ? `
+                            <button class="btn btn-sm btn-outline-danger mt-2" onclick="showVideo('${ex.youtube_url}')">
+                                <span class="material-symbols-outlined me-1" style="font-size: 16px;">play_circle</span>
+                                Watch Form Guide
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async function saveExercise() {
+        const form = document.getElementById('addExerciseForm');
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        try {
+            const response = await fetch('/api/exercises', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                bootstrap.Modal.getInstance(document.getElementById('addExerciseModal')).hide();
+                form.reset();
+                loadExercises();
+                showToast('Exercise added successfully!', 'success');
+            } else {
+                showToast('Error adding exercise', 'danger');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showToast('Error adding exercise', 'danger');
+        }
+    }
+    
+    function showVideo(url) {
+        // Open YouTube video in modal
+        const videoId = url.split('v=')[1]?.split('&')[0] || url.split('/').pop();
+        const modalHtml = `
+            <div class="modal fade" id="videoModal" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Exercise Form Guide</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Remove existing modal if present
+        const existingModal = document.getElementById('videoModal');
+        if (existingModal) existingModal.remove();
+        
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = new bootstrap.Modal(document.getElementById('videoModal'));
+        modal.show();
+        
+        document.getElementById('videoModal').addEventListener('hidden.bs.modal', () => {
+            document.getElementById('videoModal').remove();
+        });
+    }
+    
+    function resetFilters() {
+        document.getElementById('searchExercises').value = '';
+        document.getElementById('filterMuscleGroup').value = '';
+        document.getElementById('filterEquipment').value = '';
+        filterAndDisplayExercises();
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    function showToast(message, type) {
+        // Use Bootstrap toast
+        const toastHtml = `
+            <div class="toast align-items-center text-white bg-${type} border-0" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        const container = document.querySelector('.toast-container');
+        container.insertAdjacentHTML('beforeend', toastHtml);
+        const toast = new bootstrap.Toast(container.lastElementChild);
+        toast.show();
+        container.lastElementChild.addEventListener('hidden.bs.toast', () => {
+            container.lastElementChild.remove();
+        });
+    }
+    
+    // Event listeners
+    document.getElementById('searchExercises').addEventListener('input', filterAndDisplayExercises);
+    document.getElementById('filterMuscleGroup').addEventListener('change', filterAndDisplayExercises);
+    document.getElementById('filterEquipment').addEventListener('change', filterAndDisplayExercises);
+    
+    loadExercises();
+</script>
+{% endblock %}

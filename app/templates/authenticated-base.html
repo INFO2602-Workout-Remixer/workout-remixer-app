@@ -10,53 +10,138 @@
 
     #wrapper {
         display: flex;
+        width: 100%;
     }
 
     #sidebar {
-        min-width: 250px;
-        max-width: 250px;
-        min-height: 100vh;
-        transition: all 0.3s;
-        background: #1b263b;
+        min-width: 280px;
+        max-width: 280px;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
         color: #fff;
+        transition: all 0.3s;
+        min-height: 100vh;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
     }
 
     #sidebar.collapsed {
-        margin-left: -250px;
+        margin-left: -280px;
+    }
+
+    #sidebar .sidebar-header {
+        padding: 20px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    #sidebar .sidebar-header h3 {
+        font-size: 1.3rem;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    #sidebar .sidebar-header p {
+        font-size: 0.8rem;
+        opacity: 0.7;
+        margin: 5px 0 0 0;
     }
 
     #sidebar .nav-link {
-        color: #adb5bd;
+        color: rgba(255,255,255,0.8);
+        padding: 12px 20px;
+        margin: 4px 8px;
+        border-radius: 10px;
+        transition: all 0.3s;
         font-weight: 500;
     }
 
-    #sidebar .nav-link:hover,
-    #sidebar .nav-link.active {
+    #sidebar .nav-link:hover {
+        background: rgba(255,255,255,0.1);
         color: #fff;
-        background-color: #415a77;
-        border-radius: 0.5rem;
+        transform: translateX(5px);
+    }
+
+    #sidebar .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    #sidebar .nav-link .material-symbols-outlined {
+        font-size: 1.3rem;
+        vertical-align: middle;
     }
 
     #content {
         width: 100%;
-        padding: 1rem;
+        padding: 20px;
         transition: all 0.3s;
-        display: flex;
-        flex-direction: column;
         background-color: #f8f9fa;
     }
 
+    /* Card Styles */
     .card {
         border: none;
-        border-radius: 1rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
 
-    .summary-card {
-        border-left: 5px solid #0d6efd;
+    .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
     }
 
-    .navbar {
-        border-bottom: 1px solid #dee2e6;
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    /* Button Styles */
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        border-radius: 10px;
+        padding: 10px 20px;
+        font-weight: 500;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Table Styles */
+    .table {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+    }
+
+    .table thead th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+    }
+
+    /* Timer Styles */
+    .timer-display {
+        font-size: 4rem;
+        font-weight: 700;
+        font-family: monospace;
+        text-align: center;
+    }
+
+    /* Drag and Drop Styles */
+    .drag-item {
+        cursor: move;
+        transition: all 0.2s;
+    }
+
+    .drag-item.dragging {
+        opacity: 0.5;
+    }
+
+    .drag-over {
+        border-top: 3px solid #667eea;
     }
 </style>
 
@@ -64,23 +149,48 @@
 
 {% endblock %}
 
-
 {% block content %}
 <div id="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header text-center">
+            <h3>💪 Workout Remixer</h3>
+            <p>Build. Track. Improve.</p>
+        </div>
 
-    <nav id="sidebar" class="p-3 d-flex flex-column vh-100">
-        <h4 class="text-white mb-4 text-center py-4">Project Template</h4>
-
-        <ul class="nav nav-pills flex-column gap-2 flex-grow-1">
+        <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link d-flex align-items-center {{ 'active' if request.path == '/app' }}" href="/app">
-                    <span class="material-symbols-outlined me-2">people</span>
-                    Users
+                <a class="nav-link {{ 'active' if request.path == '/app/dashboard' }}" href="/app/dashboard">
+                    <span class="material-symbols-outlined me-2">dashboard</span>
+                    Dashboard
                 </a>
             </li>
-            
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.path == '/app/exercises' }}" href="/app/exercises">
+                    <span class="material-symbols-outlined me-2">fitness_center</span>
+                    Exercise Library
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.path == '/app/routines' }}" href="/app/routines">
+                    <span class="material-symbols-outlined me-2">schedule</span>
+                    My Routines
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.path == '/app/community' }}" href="/app/community">
+                    <span class="material-symbols-outlined me-2">groups</span>
+                    Community Routines
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ 'active' if request.path == '/app/history' }}" href="/app/history">
+                    <span class="material-symbols-outlined me-2">history</span>
+                    Workout History
+                </a>
+            </li>
             <li class="nav-item mt-auto">
-                <a class="nav-link d-flex align-items-center text-danger" href="/logout">
+                <a class="nav-link text-danger" href="/logout">
                     <span class="material-symbols-outlined me-2">logout</span>
                     Logout
                 </a>
@@ -88,33 +198,38 @@
         </ul>
     </nav>
 
+    <!-- Page Content -->
     <div id="content">
-        <nav class="navbar navbar-expand-lg bg-white mb-4 px-3 rounded-3 shadow-sm">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg bg-white mb-4 px-4 rounded-3 shadow-sm">
             <button class="btn btn-outline-secondary" id="menu-toggle">
-                <span class="material-symbols-outlined md-dark">menu</span>
+                <span class="material-symbols-outlined">menu</span>
             </button>
 
             <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="fw-semibold">Welcome, {{user.username}}</span>
+                <span class="text-muted">Welcome,</span>
+                <span class="fw-semibold text-primary">{{ user.username }}</span>
+                <div class="vr"></div>
+                <span class="badge bg-success">{{ user.role if user.role else 'Regular User' }}</span>
             </div>
         </nav>
-        
-        <div class="row">
+
+        <!-- Flash Messages -->
+        <div class="row mb-3">
             <div class="col-12">
                 {% for message in get_flashed_messages(request) %}
-                    <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
+                    <div class="alert alert-{{ message.type }} alert-dismissible fade show" role="alert">
+                        {{ message.message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
                 {% endfor %}
             </div>
         </div>
 
-
+        <!-- Main Content -->
         {% block subpage_content %}{% endblock %}
-
     </div>
-
-
 </div>
-
 
 <script>
     document.getElementById("menu-toggle").addEventListener("click", function () {

@@ -1,0 +1,204 @@
+{% extends "authenticated-base.html" %}
+
+{% block subpage_content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="fw-bold">Dashboard</h2>
+            <p class="text-muted">Your fitness journey at a glance</p>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Total Workouts</h6>
+                            <h2 class="mb-0" id="totalWorkouts">0</h2>
+                        </div>
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">fitness_center</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Total Exercises</h6>
+                            <h2 class="mb-0" id="totalExercises">0</h2>
+                        </div>
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">body_builder</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">Routines Created</h6>
+                            <h2 class="mb-0" id="totalRoutines">0</h2>
+                        </div>
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">schedule</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1 opacity-75">This Week</h6>
+                            <h2 class="mb-0" id="workoutsThisWeek">0</h2>
+                        </div>
+                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">calendar_today</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Quick Actions</h5>
+                    <div class="d-flex gap-3">
+                        <a href="/app/routines/create" class="btn btn-primary">
+                            <span class="material-symbols-outlined me-1">add</span>
+                            Create Routine
+                        </a>
+                        <a href="/app/exercises" class="btn btn-outline-primary">
+                            <span class="material-symbols-outlined me-1">search</span>
+                            Browse Exercises
+                        </a>
+                        <a href="/app/community" class="btn btn-outline-success">
+                            <span class="material-symbols-outlined me-1">explore</span>
+                            Explore Community
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Workouts -->
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Recent Workouts</h5>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Routine</th>
+                                    <th>Duration</th>
+                                    <th>Exercises</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentWorkouts">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">No workouts yet. Start your first workout!</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Chart -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold">Weekly Progress</h5>
+                    <canvas id="workoutChart" height="250"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    async function loadDashboard() {
+        try {
+            const response = await fetch('/api/dashboard/stats');
+            const stats = await response.json();
+            
+            document.getElementById('totalWorkouts').textContent = stats.total_workouts || 0;
+            document.getElementById('totalExercises').textContent = stats.total_exercises || 0;
+            document.getElementById('totalRoutines').textContent = stats.total_routines || 0;
+            document.getElementById('workoutsThisWeek').textContent = stats.workouts_this_week || 0;
+            
+            // Load recent workouts
+            const workoutsResponse = await fetch('/api/workouts/recent');
+            const workouts = await workoutsResponse.json();
+            
+            const tbody = document.getElementById('recentWorkouts');
+            if (workouts.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No workouts yet. Start your first workout!</td></tr>';
+            } else {
+                tbody.innerHTML = workouts.map(w => `
+                    <tr>
+                        <td>${new Date(w.date).toLocaleDateString()}</td>
+                        <td>${w.routine_name}</td>
+                        <td>${w.duration_minutes} min</td>
+                        <td>${w.exercise_count}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary" onclick="viewWorkout(${w.id})">
+                                View
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            // Create chart
+            const ctx = document.getElementById('workoutChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: stats.week_labels || ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Workouts',
+                        data: stats.workout_counts || [0,0,0,0,0,0,0],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('Error loading dashboard:', error);
+        }
+    }
+    
+    function viewWorkout(id) {
+        window.location.href = `/app/workouts/${id}`;
+    }
+    
+    loadDashboard();
+</script>
+{% endblock %}
