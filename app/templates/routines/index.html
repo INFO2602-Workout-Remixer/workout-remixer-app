@@ -37,6 +37,23 @@
         transform: translateY(-3px);
         transition: transform 0.2s ease;
     }
+    @media (max-width: 768px) {
+    .routines-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .routine-card .btn-group {
+        flex-wrap: wrap;
+    }
+    
+    .routine-card .btn-group .btn {
+        flex: 1;
+        min-width: 70px;
+        font-size: 0.7rem;
+    }
+}
 </style>
 
 <script>

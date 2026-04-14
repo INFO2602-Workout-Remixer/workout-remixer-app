@@ -3,10 +3,10 @@
 {% block subpage_content %}
 <div class="container-fluid">
     <div class="row mb-4">
-        <div class="col-12 d-flex justify-content-between align-items-center">
+        <div class="col-12 d-flex justify-content-between align-items-center flex-wrap gap-2">
             <div>
-                <h2 class="fw-bold">Exercise Library</h2>
-                <p class="text-muted">Browse and manage exercises for your workouts</p>
+                <h2 class="fw-bold" style="color: #60a5fa;">Exercise Library</h2>
+                <p class="text-secondary">Browse and manage exercises for your workouts</p>
             </div>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
                 <span class="material-symbols-outlined me-1">add</span>
@@ -15,11 +15,11 @@
         </div>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-4">
+    <div class="row mb-4 filters-row">
+        <div class="col-md-4 col-sm-12 mb-2">
             <input type="text" id="searchExercises" class="form-control" placeholder="Search exercises...">
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-12 mb-2">
             <select id="filterMuscleGroup" class="form-select">
                 <option value="">All Muscle Groups</option>
                 <option value="chest">Chest</option>
@@ -30,7 +30,7 @@
                 <option value="core">Core</option>
             </select>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-12 mb-2">
             <select id="filterEquipment" class="form-select">
                 <option value="">All Equipment</option>
                 <option value="barbell">Barbell</option>
@@ -42,24 +42,128 @@
                 <option value="wheel">Ab Wheel</option>
             </select>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 col-sm-12 mb-2">
             <button class="btn btn-outline-secondary w-100" onclick="resetFilters()">Reset Filters</button>
         </div>
     </div>
 
-    <div class="row" id="exercisesGrid">
+    <div class="row exercises-grid" id="exercisesGrid">
         <div class="col-12 text-center py-5">
             <div class="spinner-border text-primary" role="status"></div>
         </div>
     </div>
 </div>
 
+<style>
+    @media (max-width: 768px) {
+        .filters-row .col-md-4,
+        .filters-row .col-md-3,
+        .filters-row .col-md-2 {
+            margin-bottom: 10px;
+        }
+        
+        .exercises-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+        }
+        
+        .exercise-card .card-title {
+            font-size: 0.9rem;
+        }
+        
+        .exercise-card .badge {
+            font-size: 0.7rem;
+        }
+        
+        .exercise-card .card-text {
+            font-size: 0.75rem;
+        }
+        
+        .modal-dialog {
+            margin: 10px;
+        }
+        
+        .modal-body {
+            padding: 15px;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .exercises-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        h2 {
+            font-size: 1.3rem;
+        }
+        
+        .btn-primary {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+    }
+    
+    .exercise-card {
+        transition: transform 0.2s, box-shadow 0.2s;
+        background-color: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 12px;
+    }
+    
+    .exercise-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+    
+    .exercise-card .card-title {
+        color: #60a5fa;
+    }
+    
+    .form-control, .form-select {
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        color: #f1f5f9;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        background-color: #1e293b;
+        border-color: #3b82f6;
+        color: #f1f5f9;
+    }
+    
+    .modal-content {
+        background-color: #1e293b;
+        border: 1px solid #334155;
+    }
+    
+    .modal-header, .modal-footer {
+        border-color: #334155;
+    }
+    
+    .modal-title {
+        color: #60a5fa;
+    }
+    
+    .btn-close {
+        filter: invert(1);
+    }
+    
+    .form-label {
+        color: #94a3b8;
+    }
+    
+    .text-muted {
+        color: #94a3b8 !important;
+    }
+</style>
+
 <div class="modal fade" id="addExerciseModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Add New Exercise</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="addExerciseForm">
@@ -105,26 +209,26 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="modalExerciseName">Exercise Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-sm-12">
                         <div id="modalVideoContainer" class="ratio ratio-16x9 mb-3">
                             <div class="bg-dark d-flex align-items-center justify-content-center text-white">
                                 No video available for this exercise
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <h6 class="fw-bold">Form Tips</h6>
-                        <p id="modalFormTips" class="text-muted">No form tips available</p>
-                        <hr>
-                        <h6 class="fw-bold">Equipment</h6>
-                        <p id="modalEquipment" class="text-muted">-</p>
-                        <hr>
-                        <h6 class="fw-bold">Muscle Group</h6>
-                        <p id="modalMuscleGroup" class="text-muted">-</p>
+                    <div class="col-md-6 col-sm-12">
+                        <h6 class="fw-bold" style="color: #60a5fa;">Form Tips</h6>
+                        <p id="modalFormTips" class="text-secondary">No form tips available</p>
+                        <hr style="background-color: #334155;">
+                        <h6 class="fw-bold" style="color: #60a5fa;">Equipment</h6>
+                        <p id="modalEquipment" class="text-secondary">-</p>
+                        <hr style="background-color: #334155;">
+                        <h6 class="fw-bold" style="color: #60a5fa;">Muscle Group</h6>
+                        <p id="modalMuscleGroup" class="text-secondary">-</p>
                     </div>
                 </div>
             </div>
@@ -147,6 +251,7 @@
             filterAndDisplayExercises();
         } catch (error) {
             console.error('Error loading exercises:', error);
+            document.getElementById('exercisesGrid').innerHTML = '<div class="col-12 text-center py-5"><p class="text-danger">Error loading exercises. Please refresh the page.</p></div>';
         }
     }
     
@@ -241,22 +346,22 @@
         const grid = document.getElementById('exercisesGrid');
         
         if (exercises.length === 0) {
-            grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-muted">No exercises found. Add your first exercise!</p></div>';
+            grid.innerHTML = '<div class="col-12 text-center py-5"><p class="text-secondary">No exercises found. Add your first exercise!</p></div>';
             return;
         }
         
         grid.innerHTML = exercises.map(ex => `
             <div class="col-md-4 col-lg-3 mb-4">
-                <div class="card h-100 exercise-card" style="cursor: pointer;" onclick="showExerciseDetails(${JSON.stringify(ex).replace(/"/g, '&quot;')})">
+                <div class="card exercise-card" style="cursor: pointer;" onclick="showExerciseDetails(${JSON.stringify(ex).replace(/"/g, '&quot;')})">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-start">
-                            <h6 class="card-title fw-bold">${escapeHtml(ex.name)}</h6>
-                            <span class="material-symbols-outlined text-primary" style="font-size: 20px;">info</span>
+                            <h6 class="card-title fw-bold" style="color: #60a5fa;">${escapeHtml(ex.name)}</h6>
+                            <span class="material-symbols-outlined" style="color: #3b82f6; font-size: 20px;">info</span>
                         </div>
-                        <span class="badge bg-primary mb-2">${ex.muscle_group}</span>
-                        ${ex.equipment ? `<span class="badge bg-secondary mb-2">${ex.equipment}</span>` : ''}
-                        <p class="card-text small text-muted mt-2">${ex.form_tips ? ex.form_tips.substring(0, 80) + '...' : 'Click to view form tips and video guide'}</p>
-                        ${ex.youtube_url ? '<span class="badge bg-danger"><span class="material-symbols-outlined" style="font-size: 12px;">play_circle</span> Video Available</span>' : ''}
+                        <span class="badge" style="background: #3b82f6; margin-bottom: 8px;">${ex.muscle_group}</span>
+                        ${ex.equipment ? `<span class="badge" style="background: #475569; margin-bottom: 8px;">${ex.equipment}</span>` : ''}
+                        <p class="card-text small text-secondary mt-2">${ex.form_tips ? ex.form_tips.substring(0, 80) + '...' : 'Click to view form tips and video guide'}</p>
+                        ${ex.youtube_url ? '<span class="badge" style="background: #ef4444;"><span class="material-symbols-outlined" style="font-size: 12px;">play_circle</span> Video Available</span>' : ''}
                     </div>
                 </div>
             </div>
@@ -303,26 +408,40 @@
     }
     
     function escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
     }
     
     function showToast(message, type) {
+        let toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(toastContainer);
+        }
+        
+        let bgColor = 'bg-primary';
+        if (type === 'success') bgColor = 'bg-success';
+        else if (type === 'danger') bgColor = 'bg-danger';
+        
         const toastHtml = `
-            <div class="toast align-items-center text-white bg-${type} border-0" role="alert">
+            <div class="toast align-items-center text-white ${bgColor} border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
                 <div class="d-flex">
                     <div class="toast-body">${message}</div>
                     <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
                 </div>
             </div>
         `;
-        const container = document.querySelector('.toast-container');
-        container.insertAdjacentHTML('beforeend', toastHtml);
-        const toast = new bootstrap.Toast(container.lastElementChild);
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        const toastElement = toastContainer.lastElementChild;
+        const toast = new bootstrap.Toast(toastElement);
         toast.show();
-        container.lastElementChild.addEventListener('hidden.bs.toast', () => {
-            container.lastElementChild.remove();
+        
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
         });
     }
     

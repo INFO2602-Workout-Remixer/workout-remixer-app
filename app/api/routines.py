@@ -3,6 +3,7 @@ from app.dependencies import SessionDep, AuthDep
 from app.models.routine import Routine
 from app.models.routine_exercise import RoutineExercise
 from app.models.exercise import Exercise
+from app.models.user import User
 from sqlmodel import select
 import httpx
 import random
@@ -74,6 +75,26 @@ async def get_routines(db: SessionDep, user: AuthDep):
         return result
     except Exception as e:
         print(f"Error in get_routines: {e}")
+        return []
+
+@router.get("/public")
+async def get_public_routines(db: SessionDep, user: AuthDep):
+    try:
+        routines = db.exec(select(Routine).where(Routine.is_public == True)).all()
+        result = []
+        for r in routines:
+            owner = db.exec(select(User).where(User.id == r.user_id)).first()
+            exercise_count = db.exec(select(RoutineExercise).where(RoutineExercise.routine_id == r.id)).all()
+            result.append({
+                "id": r.id,
+                "name": r.name,
+                "description": r.description,
+                "exercise_count": len(exercise_count),
+                "username": owner.username if owner else "Unknown"
+            })
+        return result
+    except Exception as e:
+        print(f"Error in get_public_routines: {e}")
         return []
 
 @router.post("/")

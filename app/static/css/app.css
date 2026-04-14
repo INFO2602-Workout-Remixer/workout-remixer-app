@@ -116,3 +116,75 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
 }
+/* Mobile Responsive Styles */
+* {
+    box-sizing: border-box;
+}
+
+img, video, canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 768px) {
+    button, 
+    .btn,
+    a,
+    .nav-link,
+    .clickable {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    input, 
+    select, 
+    textarea {
+        font-size: 16px !important;
+    }
+    
+    .modal-content {
+        margin: 10px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .toast-container {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+    }
+    
+    .toast {
+        width: calc(100% - 20px);
+        max-width: none;
+    }
+}
+
+/* Landscape mode optimization */
+@media (max-width: 900px) and (orientation: landscape) {
+    #sidebar {
+        overflow-y: auto;
+        max-height: 100vh;
+    }
+    
+    .timer-display {
+        font-size: 1.5rem;
+    }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .stat-card h2 {
+        font-size: 1.8rem;
+    }
+    
+    .btn-group .btn {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    .exercise-card {
+        min-height: 180px;
+    }
+}

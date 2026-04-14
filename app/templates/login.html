@@ -42,7 +42,29 @@
 
     .form-section {
         padding: 3rem;
-        background: white;
+        background: #1e293b;
+    }
+
+    .form-section h3 {
+        color: #60a5fa;
+    }
+
+    .form-label {
+        color: #94a3b8;
+    }
+
+    .form-control {
+        border-radius: 0.5rem;
+        background-color: #0f172a;
+        border: 1px solid #334155;
+        color: #f1f5f9;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+        background-color: #1e293b;
+        color: #f1f5f9;
     }
 
     .btn-primary {
@@ -59,7 +81,7 @@
     }
 
     .btn-secondary {
-        background: #64748b;
+        background: #475569;
         border: none;
         border-radius: 0.5rem;
         padding: 12px;
@@ -67,18 +89,13 @@
     }
 
     .btn-secondary:hover {
-        background: #475569;
+        background: #334155;
     }
 
-    .form-control {
-        border-radius: 0.5rem;
-        border: 1px solid #e2e8f0;
-        padding: 12px;
-    }
-
-    .form-control:focus {
-        border-color: var(--primary-blue);
-        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    .alert-info {
+        background-color: #1e40af;
+        border-color: #3b82f6;
+        color: #dbeafe;
     }
 </style>
 {% endblock %}
@@ -92,10 +109,10 @@
             <div class="col-lg-6 d-none d-lg-flex login-image">
                 <div class="text-center">
                     <h2 class="mt-4 fw-bold">Welcome Back</h2>
-                    <p class="lead">Sign in to continue to the app</p>
+                    <p class="lead">Sign in to continue to LiftLab</p>
                 </div>
             </div>
-            <div class="col-lg-6 bg-white">
+            <div class="col-lg-6">
                 <div class="form-section">
                     <h3 class="fw-bold mb-4">Login</h3>
 
@@ -112,28 +129,29 @@
                                 required>
                         </div>
 
+                        <div class="alert alert-info mb-3">
+                            <small>🔑 <strong>Test Credentials:</strong> username: <strong>bob</strong> / password: <strong>bobpass</strong></small>
+                        </div>
+
                         <div class="d-grid mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">
                                 Sign In
                             </button>
-
+                        </div>
                     </form>
+
+                    <div class="d-grid mb-3">
+                        <a class="btn btn-secondary btn-lg" href="{{url_for('register_view')}}" role="button">
+                            Sign Up
+                        </a>
+                    </div>
+
+                    {% for message in get_flashed_messages(request) %}
+                    <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
+                    {% endfor %}
                 </div>
-
-                <div class="d-grid mb-3">
-                    <a class="btn btn-secondary btn-lg" href="{{url_for('register_view')}}" role="button">
-                        Sign Up
-                    </a>
-                </div>
-
-
-                {% for message in get_flashed_messages(request) %}
-                <div class="alert alert-{{ message.type }}" role="alert">{{ message.message }}</div>
-                {% endfor %}
             </div>
         </div>
-
     </div>
-</div>
 </div>
 {% endblock %}

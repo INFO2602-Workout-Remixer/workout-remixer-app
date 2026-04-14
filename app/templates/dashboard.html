@@ -84,6 +84,10 @@
                             <span class="material-symbols-outlined me-1">explore</span>
                             Explore Community
                         </a>
+                        <button class="btn" style="background: linear-gradient(135deg, #3b82f6, #f97316); color: white; border: none;" onclick="openAIWorkoutGenerator()">
+                            <span class="material-symbols-outlined me-1" style="font-size: 1.2rem;">auto_awesome</span>
+                            AI Generate Workout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -156,6 +160,24 @@
         border-radius: 10px;
         padding: 10px;
     }
+    @media (max-width: 768px) {
+    .stat-card {
+        margin-bottom: 10px;
+    }
+    
+    .stat-card .stat-number {
+        font-size: 1.2rem;
+    }
+    
+    .quick-actions {
+        flex-direction: column;
+    }
+    
+    .quick-actions .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+}
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -255,6 +277,69 @@
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+    
+    function showToast(message, type) {
+        let toastContainer = document.querySelector('.toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+            document.body.appendChild(toastContainer);
+        }
+        
+        let bgColor = 'bg-primary';
+        if (type === 'success') bgColor = 'bg-success';
+        else if (type === 'danger') bgColor = 'bg-danger';
+        else if (type === 'info') bgColor = 'bg-info';
+        
+        const toastHtml = `
+            <div class="toast align-items-center text-white ${bgColor} border-0" role="alert" data-bs-autohide="true" data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        `;
+        
+        toastContainer.insertAdjacentHTML('beforeend', toastHtml);
+        const toastElement = toastContainer.lastElementChild;
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+    }
+    
+    function openAIWorkoutGenerator() {
+        const goal = prompt("What's your fitness goal? (e.g., build muscle, lose fat, get stronger, improve endurance)");
+        if (!goal) return;
+        
+        const equipment = prompt("What equipment do you have? (e.g., barbell, dumbbells, bodyweight, cables)");
+        if (!equipment) return;
+        
+        showToast('🤖 AI is generating a custom workout for you...', 'info');
+        
+        fetch('/api/ai/generate-workout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ goal: goal, equipment: equipment })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.routine_name) {
+                showToast(`✅ AI created "${data.routine_name}"`, 'success');
+                setTimeout(() => {
+                    window.location.href = '/app/routines';
+                }, 1500);
+            } else {
+                showToast('❌ Error generating workout', 'danger');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('❌ Error generating workout', 'danger');
+        });
     }
     
     loadDashboard();
