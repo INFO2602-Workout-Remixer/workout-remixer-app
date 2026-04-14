@@ -1,0 +1,142 @@
+{% extends "authenticated-base.html" %}
+
+{% block subpage_content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">{{ 'Edit Routine' if routine_id else 'Create New Routine' }}</h4>
+                </div>
+                <div class="card-body">
+                    <form id="routineForm">
+                        <div class="mb-3">
+                            <label class="form-label">Routine Name</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="description" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="is_public">
+                            <label class="form-check-label">Make this routine public for others to see</label>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Exercises</label>
+                            <div id="exercisesList" class="mb-3"></div>
+                            <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#addExerciseModal">
+                                + Add Exercise
+                            </button>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Routine</button>
+                        <a href="/app/routines" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="addExerciseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Exercise</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <select id="exerciseSelect" class="form-select mb-3">
+                    <option value="">Select Exercise</option>
+                </select>
+                <input type="number" id="sets" class="form-control mb-2" placeholder="Sets">
+                <input type="number" id="reps" class="form-control mb-2" placeholder="Reps">
+                <input type="number" id="rest_seconds" class="form-control mb-2" placeholder="Rest (seconds)">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addExercise()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let exercises = [];
+    
+    async function loadExercises() {
+        const response = await fetch('/api/exercises');
+        const data = await response.json();
+        const select = document.getElementById('exerciseSelect');
+        select.innerHTML = '<option value="">Select Exercise</option>' + 
+            data.map(e => `<option value="${e.id}">${e.name} (${e.muscle_group})</option>`).join('');
+    }
+    
+    function addExercise() {
+        const exerciseId = document.getElementById('exerciseSelect').value;
+        const exerciseName = document.getElementById('exerciseSelect').selectedOptions[0]?.text.split(' (')[0];
+        const sets = document.getElementById('sets').value;
+        const reps = document.getElementById('reps').value;
+        const rest = document.getElementById('rest_seconds').value;
+        
+        if (!exerciseId || !sets || !reps) {
+            alert('Please fill all fields');
+            return;
+        }
+        
+        exercises.push({ exercise_id: parseInt(exerciseId), name: exerciseName, sets: parseInt(sets), reps: parseInt(reps), rest_seconds: parseInt(rest), order: exercises.length });
+        renderExercises();
+        bootstrap.Modal.getInstance(document.getElementById('addExerciseModal')).hide();
+        document.getElementById('sets').value = '';
+        document.getElementById('reps').value = '';
+        document.getElementById('rest_seconds').value = '';
+    }
+    
+    function renderExercises() {
+        const container = document.getElementById('exercisesList');
+        if (exercises.length === 0) {
+            container.innerHTML = '<p class="text-muted">No exercises added yet. Click "Add Exercise" to get started.</p>';
+            return;
+        }
+        container.innerHTML = exercises.map((ex, i) => `
+            <div class="alert alert-secondary d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${ex.name}</strong><br>
+                    <small>${ex.sets} sets × ${ex.reps} reps | Rest: ${ex.rest_seconds}s</small>
+                </div>
+                <button class="btn btn-sm btn-danger" onclick="removeExercise(${i})">Remove</button>
+            </div>
+        `).join('');
+    }
+    
+    function removeExercise(index) {
+        exercises.splice(index, 1);
+        exercises.forEach((ex, i) => ex.order = i);
+        renderExercises();
+    }
+    
+    document.getElementById('routineForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            name: document.getElementById('name').value,
+            description: document.getElementById('description').value,
+            is_public: document.getElementById('is_public').checked,
+            exercises: exercises
+        };
+        
+        const response = await fetch('/api/routines', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            window.location.href = '/app/routines';
+        } else {
+            alert('Error saving routine');
+        }
+    });
+    
+    loadExercises();
+</script>
+{% endblock %}

@@ -1,5 +1,5 @@
 from sqlmodel import Session, select, func
-from app.models.user import UserBase, User
+from app.models.user import User
 from typing import Optional, Tuple
 from app.utilities.pagination import Pagination
 from app.schemas.user import UserUpdate
@@ -11,9 +11,9 @@ class UserRepository:
     def __init__(self, db: Session):
         self.db = db
 
-    def create(self, user_data: UserBase) -> Optional[User]:
+    def create(self, user_data: dict) -> Optional[User]:
         try:
-            user_db = User.model_validate(user_data)
+            user_db = User(**user_data)
             self.db.add(user_db)
             self.db.commit()
             self.db.refresh(user_db)
@@ -47,14 +47,14 @@ class UserRepository:
     def get_all_users(self) -> list[User]:
         return self.db.exec(select(User)).all()
 
-    def update_user(self, user_id:int, user_data: UserUpdate)->User:
+    def update_user(self, user_id: int, user_data: dict) -> User:
         user = self.db.get(User, user_id)
         if not user:
             raise Exception("Invalid user id given")
-        if user_data.username:
-            user.username = user_data.username
-        if user_data.email:
-            user.email = user_data.email
+        if user_data.get("username"):
+            user.username = user_data["username"]
+        if user_data.get("email"):
+            user.email = user_data["email"]
         
         try:
             self.db.add(user)
