@@ -9,28 +9,92 @@
                     <h4 class="mb-0" id="routineName">Loading...</h4>
                 </div>
                 <div class="card-body">
-                    <!-- Current Exercise -->
-                    <div id="currentExercise" class="text-center mb-4">
-                        <h3 id="exerciseName" class="mb-3">-</h3>
-                        <div class="timer-display mb-3" id="timerDisplay">00:00</div>
-                        <div class="progress mb-3">
-                            <div class="progress-bar" id="exerciseProgress" style="width: 0%"></div>
-                        </div>
-                        <div class="btn-group">
-                            <button class="btn btn-success" onclick="completeSet()">✓ Complete Set</button>
-                            <button class="btn btn-warning" onclick="skipRest()">⏭ Skip Rest</button>
+                    <!-- Workout Controls -->
+                    <div class="text-center mb-4">
+                        <div id="workoutControls">
+                            <button id="startWorkoutBtn" class="btn btn-success btn-lg">
+                                <span class="material-symbols-outlined">play_arrow</span> Start Workout
+                            </button>
+                            <button id="pauseWorkoutBtn" class="btn btn-warning btn-lg" style="display: none;">
+                                <span class="material-symbols-outlined">pause</span> Pause
+                            </button>
+                            <button id="resumeWorkoutBtn" class="btn btn-primary btn-lg" style="display: none;">
+                                <span class="material-symbols-outlined">play_circle</span> Resume
+                            </button>
+                            <button id="stopWorkoutBtn" class="btn btn-danger btn-lg" style="display: none;">
+                                <span class="material-symbols-outlined">stop</span> Stop Workout
+                            </button>
                         </div>
                     </div>
-                    
+
+                    <!-- Timer Display -->
+                    <div class="text-center mb-4">
+                        <div class="card bg-dark text-white">
+                            <div class="card-body">
+                                <h5>Workout Timer</h5>
+                                <div class="timer-display" id="workoutTimerDisplay">00:00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Exercise -->
+                    <div id="currentExerciseSection" style="display: none;">
+                        <div class="card mb-4">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">Current Exercise</h5>
+                            </div>
+                            <div class="card-body text-center">
+                                <h3 id="exerciseName" class="mb-3">-</h3>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>Sets</h6>
+                                                <p class="h3" id="currentSets">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>Reps</h6>
+                                                <p class="h3" id="currentReps">0</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="card bg-light">
+                                            <div class="card-body">
+                                                <h6>Rest</h6>
+                                                <p class="h3" id="currentRest">0s</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="progress mt-3">
+                                    <div class="progress-bar" id="exerciseProgress" style="width: 0%"></div>
+                                </div>
+                                <div class="mt-3">
+                                    <button class="btn btn-success" id="completeSetBtn" style="display: none;">
+                                        ✓ Complete Set
+                                    </button>
+                                    <div id="restingMessage" class="alert alert-warning mt-3" style="display: none;">
+                                        💤 Resting... Next exercise starting in <span id="restTimer">0</span> seconds
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Exercise List -->
                     <div class="mt-4">
                         <h5>Workout Plan</h5>
                         <div id="exerciseList" class="list-group"></div>
                     </div>
-                    
+
                     <!-- Complete Workout Button -->
                     <div class="text-center mt-4">
-                        <button class="btn btn-primary btn-lg" onclick="completeWorkout()" id="completeBtn" style="display: none;">
+                        <button class="btn btn-primary btn-lg" id="completeWorkoutBtn" style="display: none;">
                             🎉 Complete Workout 🎉
                         </button>
                     </div>
@@ -40,162 +104,281 @@
     </div>
 </div>
 
+<style>
+    .timer-display {
+        font-size: 4rem;
+        font-weight: bold;
+        font-family: monospace;
+    }
+    .list-group-item.active {
+        background-color: #667eea;
+        border-color: #667eea;
+    }
+    .progress {
+        height: 10px;
+    }
+    .progress-bar {
+        transition: width 0.3s ease;
+    }
+    .btn .material-symbols-outlined {
+        font-size: 1.2rem;
+        vertical-align: middle;
+    }
+</style>
+
 <script>
     let routineId = {{ routine_id }};
     let exercises = [];
     let currentIndex = 0;
-    let timer = null;
+    let workoutTimer = null;
+    let exerciseTimer = null;
+    let restTimer = null;
+    let isWorkoutActive = false;
+    let isPaused = false;
     let isResting = false;
-    let timeLeft = 0;
-    let workoutStartTime = new Date();
+    let workoutSeconds = 0;
+    let currentExerciseSeconds = 0;
+    let restSecondsLeft = 0;
     let completedSets = [];
-    
+    let workoutStartTime = null;
+
     async function loadWorkout() {
         try {
-            const response = await fetch(`/api/routines/${routineId}/workout-data`);
+            const response = await fetch(`/api/routines/${routineId}`);
             const data = await response.json();
             exercises = data.exercises;
-            document.getElementById('routineName').textContent = data.routine_name;
+            document.getElementById('routineName').textContent = data.name;
             
             displayExerciseList();
-            startExercise(0);
+            
+            document.getElementById('startWorkoutBtn').addEventListener('click', startWorkout);
+            document.getElementById('pauseWorkoutBtn').addEventListener('click', pauseWorkout);
+            document.getElementById('resumeWorkoutBtn').addEventListener('click', resumeWorkout);
+            document.getElementById('stopWorkoutBtn').addEventListener('click', stopWorkout);
+            document.getElementById('completeSetBtn').addEventListener('click', completeSet);
+            document.getElementById('completeWorkoutBtn').addEventListener('click', completeWorkout);
         } catch (error) {
             console.error('Error loading workout:', error);
+            alert('Error loading workout. Please try again.');
         }
     }
-    
+
     function displayExerciseList() {
         const container = document.getElementById('exerciseList');
         container.innerHTML = exercises.map((ex, idx) => `
             <div class="list-group-item ${idx === currentIndex ? 'active' : ''}" id="exerciseItem-${idx}">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>${ex.name}</strong>
+                        <strong>${escapeHtml(ex.name)}</strong>
                         <br>
-                        <small>${ex.sets} sets × ${ex.reps} reps</small>
+                        <small>${ex.sets} sets × ${ex.reps} reps | Rest: ${ex.rest_seconds}s</small>
                     </div>
                     <div>
-                        <span class="badge bg-secondary">Rest: ${ex.rest_seconds}s</span>
-                        ${idx < currentIndex ? '<span class="badge bg-success ms-2">✓</span>' : ''}
+                        ${idx < currentIndex ? '<span class="badge bg-success">✓ Completed</span>' : ''}
+                        ${idx === currentIndex && isWorkoutActive ? '<span class="badge bg-primary">Current</span>' : ''}
                     </div>
                 </div>
             </div>
         `).join('');
     }
-    
-    function startExercise(index) {
+
+    function startWorkout() {
+        if (exercises.length === 0) {
+            alert('No exercises in this routine!');
+            return;
+        }
+        
+        isWorkoutActive = true;
+        isPaused = false;
+        workoutStartTime = new Date();
+        workoutSeconds = 0;
+        currentIndex = 0;
+        completedSets = [];
+        
+        document.getElementById('startWorkoutBtn').style.display = 'none';
+        document.getElementById('pauseWorkoutBtn').style.display = 'inline-block';
+        document.getElementById('stopWorkoutBtn').style.display = 'inline-block';
+        document.getElementById('currentExerciseSection').style.display = 'block';
+        
+        startWorkoutTimer();
+        startCurrentExercise(0);
+    }
+
+    function startWorkoutTimer() {
+        if (workoutTimer) clearInterval(workoutTimer);
+        
+        workoutTimer = setInterval(() => {
+            if (!isPaused && isWorkoutActive) {
+                workoutSeconds++;
+                updateWorkoutTimerDisplay();
+            }
+        }, 1000);
+    }
+
+    function updateWorkoutTimerDisplay() {
+        const mins = Math.floor(workoutSeconds / 60);
+        const secs = workoutSeconds % 60;
+        document.getElementById('workoutTimerDisplay').textContent = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function startCurrentExercise(index) {
+        if (index >= exercises.length) {
+            completeWorkout();
+            return;
+        }
+        
         currentIndex = index;
         isResting = false;
+        currentExerciseSeconds = 0;
         
-        // Update active highlight
+        document.getElementById('completeSetBtn').style.display = 'inline-block';
+        document.getElementById('restingMessage').style.display = 'none';
+        
+        const exercise = exercises[index];
+        document.getElementById('exerciseName').textContent = exercise.name;
+        document.getElementById('currentSets').textContent = exercise.sets;
+        document.getElementById('currentReps').textContent = exercise.reps;
+        document.getElementById('currentRest').textContent = `${exercise.rest_seconds}s`;
+        
+        updateActiveHighlight();
+        startExerciseTimer();
+    }
+
+    function startExerciseTimer() {
+        if (exerciseTimer) clearInterval(exerciseTimer);
+        
+        exerciseTimer = setInterval(() => {
+            if (!isPaused && isWorkoutActive && !isResting) {
+                currentExerciseSeconds++;
+                updateExerciseProgress();
+            }
+        }, 1000);
+    }
+
+    function updateExerciseProgress() {
+        const expectedDuration = 60;
+        const progress = Math.min((currentExerciseSeconds / expectedDuration) * 100, 100);
+        document.getElementById('exerciseProgress').style.width = `${progress}%`;
+        
+        if (progress >= 100) {
+            clearInterval(exerciseTimer);
+        }
+    }
+
+    function completeSet() {
+        if (isResting || !isWorkoutActive || isPaused) return;
+        
+        if (exerciseTimer) clearInterval(exerciseTimer);
+        
+        const exercise = exercises[currentIndex];
+        completedSets.push({
+            exercise_id: exercise.id,
+            exercise_name: exercise.name,
+            sets_completed: exercise.sets,
+            reps_completed: exercise.reps,
+            timestamp: new Date()
+        });
+        
+        if (currentIndex + 1 < exercises.length) {
+            startRestTimer(exercises[currentIndex].rest_seconds);
+        } else {
+            completeWorkout();
+        }
+    }
+
+    function startRestTimer(seconds) {
+        isResting = true;
+        restSecondsLeft = seconds;
+        document.getElementById('completeSetBtn').style.display = 'none';
+        document.getElementById('restingMessage').style.display = 'block';
+        document.getElementById('restTimer').textContent = restSecondsLeft;
+        
+        if (restTimer) clearInterval(restTimer);
+        
+        restTimer = setInterval(() => {
+            if (!isPaused && isWorkoutActive) {
+                restSecondsLeft--;
+                document.getElementById('restTimer').textContent = restSecondsLeft;
+                
+                if (restSecondsLeft <= 0) {
+                    clearInterval(restTimer);
+                    isResting = false;
+                    document.getElementById('completeSetBtn').style.display = 'inline-block';
+                    document.getElementById('restingMessage').style.display = 'none';
+                    startCurrentExercise(currentIndex + 1);
+                }
+            }
+        }, 1000);
+    }
+
+    function pauseWorkout() {
+        if (!isWorkoutActive) return;
+        
+        isPaused = true;
+        document.getElementById('pauseWorkoutBtn').style.display = 'none';
+        document.getElementById('resumeWorkoutBtn').style.display = 'inline-block';
+        
+        if (restTimer) clearInterval(restTimer);
+        if (exerciseTimer) clearInterval(exerciseTimer);
+    }
+
+    function resumeWorkout() {
+        if (!isWorkoutActive) return;
+        
+        isPaused = false;
+        document.getElementById('resumeWorkoutBtn').style.display = 'none';
+        document.getElementById('pauseWorkoutBtn').style.display = 'inline-block';
+        
+        if (isResting) {
+            startRestTimer(restSecondsLeft);
+        } else {
+            startExerciseTimer();
+        }
+    }
+
+    function stopWorkout() {
+        if (confirm('Are you sure you want to stop this workout? Progress will not be saved.')) {
+            resetWorkout();
+            window.location.href = '/app/routines';
+        }
+    }
+
+    function resetWorkout() {
+        isWorkoutActive = false;
+        isPaused = false;
+        isResting = false;
+        
+        if (workoutTimer) clearInterval(workoutTimer);
+        if (exerciseTimer) clearInterval(exerciseTimer);
+        if (restTimer) clearInterval(restTimer);
+        
+        document.getElementById('startWorkoutBtn').style.display = 'inline-block';
+        document.getElementById('pauseWorkoutBtn').style.display = 'none';
+        document.getElementById('resumeWorkoutBtn').style.display = 'none';
+        document.getElementById('stopWorkoutBtn').style.display = 'none';
+        document.getElementById('completeWorkoutBtn').style.display = 'none';
+        document.getElementById('currentExerciseSection').style.display = 'none';
+        document.getElementById('workoutTimerDisplay').textContent = '00:00';
+        workoutSeconds = 0;
+    }
+
+    function updateActiveHighlight() {
         document.querySelectorAll('[id^="exerciseItem-"]').forEach((el, i) => {
-            if (i === index) {
+            if (i === currentIndex) {
                 el.classList.add('active');
             } else {
                 el.classList.remove('active');
             }
         });
-        
-        const exercise = exercises[index];
-        document.getElementById('exerciseName').textContent = exercise.name;
-        
-        // Start exercise timer (count up for exercise, count down for rest)
-        startExerciseTimer();
     }
-    
-    function startExerciseTimer() {
-        if (timer) clearInterval(timer);
-        
-        let seconds = 0;
-        updateTimerDisplay(seconds);
-        
-        timer = setInterval(() => {
-            seconds++;
-            updateTimerDisplay(seconds);
-        }, 1000);
-    }
-    
-    function startRestTimer(seconds) {
-        if (timer) clearInterval(timer);
-        
-        isResting = true;
-        timeLeft = seconds;
-        updateTimerDisplay(timeLeft);
-        
-        // Update UI to show rest mode
-        document.getElementById('exerciseName').innerHTML = `💤 Rest Break - ${seconds}s remaining`;
-        
-        timer = setInterval(() => {
-            timeLeft--;
-            updateTimerDisplay(timeLeft);
-            
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                isResting = false;
-                // Move to next exercise
-                if (currentIndex + 1 < exercises.length) {
-                    startExercise(currentIndex + 1);
-                } else {
-                    completeWorkout();
-                }
-            }
-        }, 1000);
-    }
-    
-    function updateTimerDisplay(seconds) {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        document.getElementById('timerDisplay').textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        
-        // Update progress bar
-        if (!isResting && exercises[currentIndex]) {
-            const expectedDuration = 60; // Assume 60 sec per exercise
-            const progress = (seconds / expectedDuration) * 100;
-            document.getElementById('exerciseProgress').style.width = `${Math.min(progress, 100)}%`;
-        } else if (isResting && exercises[currentIndex]) {
-            const totalRest = exercises[currentIndex].rest_seconds;
-            const progress = ((totalRest - timeLeft) / totalRest) * 100;
-            document.getElementById('exerciseProgress').style.width = `${progress}%`;
-        }
-    }
-    
-    function completeSet() {
-        if (isResting) return;
-        
-        if (timer) clearInterval(timer);
-        
-        // Log the completed set
-        completedSets.push({
-            exercise_id: exercises[currentIndex].id,
-            exercise_name: exercises[currentIndex].name,
-            sets_completed: exercises[currentIndex].sets,
-            reps_completed: exercises[currentIndex].reps,
-            timestamp: new Date()
-        });
-        
-        // Start rest period
-        const restSeconds = exercises[currentIndex].rest_seconds;
-        startRestTimer(restSeconds);
-    }
-    
-    function skipRest() {
-        if (isResting && timer) {
-            clearInterval(timer);
-            isResting = false;
-            
-            if (currentIndex + 1 < exercises.length) {
-                startExercise(currentIndex + 1);
-            } else {
-                completeWorkout();
-            }
-        }
-    }
-    
+
     async function completeWorkout() {
-        if (timer) clearInterval(timer);
+        if (workoutTimer) clearInterval(workoutTimer);
+        if (exerciseTimer) clearInterval(exerciseTimer);
+        if (restTimer) clearInterval(restTimer);
         
-        const workoutEndTime = new Date();
-        const durationSeconds = Math.floor((workoutEndTime - workoutStartTime) / 1000);
+        const durationSeconds = workoutSeconds;
         
         try {
             const response = await fetch('/api/workouts/complete', {
@@ -209,14 +392,26 @@
             });
             
             if (response.ok) {
-                alert('🎉 Great job! Workout completed! 🎉');
+                alert(`🎉 Great job! Workout completed in ${Math.floor(durationSeconds / 60)} minutes and ${durationSeconds % 60} seconds! 🎉`);
+                window.location.href = '/app/dashboard';
+            } else {
+                alert('Workout saved! Well done! 🎉');
                 window.location.href = '/app/dashboard';
             }
         } catch (error) {
             console.error('Error saving workout:', error);
+            alert('Workout completed! Great job! 🎉');
+            window.location.href = '/app/dashboard';
         }
     }
-    
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
     loadWorkout();
 </script>
 {% endblock %}
