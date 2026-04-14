@@ -1,20 +1,3 @@
-import uvicorn
-from fastapi import FastAPI, Request, status
-from starlette.middleware import Middleware
-from starlette.middleware.sessions import SessionMiddleware
-from app.routers import templates, static_files, router, api_router
-from app.config import get_settings
-from contextlib import asynccontextmanager
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    from app.database import create_db_and_tables
-    create_db_and_tables()
-    await seed_database()
-    yield
-
-
 async def seed_database():
     from app.database import get_session
     from app.models.exercise import Exercise
@@ -23,7 +6,7 @@ async def seed_database():
     from sqlmodel import select
     
     with next(get_session()) as session:
-        # ALWAYS create Bob user if not exists (this runs every time)
+        # ALWAYS create Bob user
         existing_bob = session.exec(select(User).where(User.username == "bob")).first()
         if not existing_bob:
             bob = User(
@@ -38,11 +21,14 @@ async def seed_database():
         else:
             print("✅ Test user bob already exists")
         
-        # Only seed exercises if none exist
-        existing_count = session.exec(select(Exercise)).all()
-        if len(existing_count) > 0:
-            print(f"Database already has {len(existing_count)} exercises, skipping exercise seed")
-            return
+        # FORCE DELETE all existing exercises
+        existing_exercises = session.exec(select(Exercise)).all()
+        if len(existing_exercises) > 0:
+            print(f"Deleting {len(existing_exercises)} old exercises...")
+            for ex in existing_exercises:
+                session.delete(ex)
+            session.commit()
+            print("Old exercises deleted!")
         
         exercises = [
             # Chest (6 exercises)
@@ -103,24 +89,3 @@ async def seed_database():
         
         session.commit()
         print(f"✅ Added {len(exercises)} exercises to database")
-
-
-app = FastAPI(middleware=[
-    Middleware(SessionMiddleware, secret_key=get_settings().secret_key)
-],
-    lifespan=lifespan
-)   
-
-app.include_router(router)
-app.include_router(api_router)
-app.mount("/static", static_files, name="static")
-
-@app.exception_handler(status.HTTP_401_UNAUTHORIZED)
-async def unauthorized_redirect_handler(request: Request, exc: Exception):
-    return templates.TemplateResponse(
-        request=request, 
-        name="401.html",
-    )
-
-if __name__ == "__main__":
-    uvicorn.run("app.main:app", host=get_settings().app_host, port=get_settings().app_port, reload=get_settings().env.lower()!="production")
