@@ -3,9 +3,28 @@
 {% block internal_css %}
 
 <style>
+    :root {
+        --primary-blue: #3b82f6;
+        --primary-blue-dark: #2563eb;
+        --primary-orange: #f97316;
+        --primary-orange-dark: #ea580c;
+        --bg-dark: #1e293b;
+        --bg-sidebar: #0f172a;
+        --bg-main: #f1f5f9;
+        --card-bg: #ffffff;
+        --text-primary: #1e293b;
+        --text-secondary: #64748b;
+        --border-color: #e2e8f0;
+        --success: #10b981;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --info: #3b82f6;
+    }
+
     body {
         overflow-x: hidden;
-        background-color: #f8f9fa;
+        background-color: var(--bg-main);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     #wrapper {
@@ -16,7 +35,7 @@
     #sidebar {
         min-width: 280px;
         max-width: 280px;
-        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        background: var(--bg-sidebar);
         color: #fff;
         transition: all 0.3s;
         min-height: 100vh;
@@ -36,16 +55,18 @@
         font-size: 1.3rem;
         margin: 0;
         font-weight: 600;
+        color: var(--primary-orange);
     }
 
     #sidebar .sidebar-header p {
         font-size: 0.8rem;
         opacity: 0.7;
         margin: 5px 0 0 0;
+        color: #94a3b8;
     }
 
     #sidebar .nav-link {
-        color: rgba(255,255,255,0.8);
+        color: #cbd5e1;
         padding: 12px 20px;
         margin: 4px 8px;
         border-radius: 10px;
@@ -54,15 +75,15 @@
     }
 
     #sidebar .nav-link:hover {
-        background: rgba(255,255,255,0.1);
-        color: #fff;
+        background: rgba(59, 130, 246, 0.2);
+        color: var(--primary-blue);
         transform: translateX(5px);
     }
 
     #sidebar .nav-link.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
         color: #fff;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
     }
 
     #sidebar .nav-link .material-symbols-outlined {
@@ -70,19 +91,29 @@
         vertical-align: middle;
     }
 
-    #content {
-        width: 100%;
-        padding: 20px;
-        transition: all 0.3s;
-        background-color: #f8f9fa;
+    #sidebar .nav-link.text-danger {
+        color: #f87171;
     }
 
+    #sidebar .nav-link.text-danger:hover {
+        background: rgba(239, 68, 68, 0.2);
+        color: #f87171;
+    }
+
+    #content {
+    width: 100%;
+    padding: 20px;
+    transition: all 0.3s;
+    background-color: #3e3f42;
+}
     /* Card Styles */
     .card {
         border: none;
         border-radius: 15px;
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         transition: transform 0.2s, box-shadow 0.2s;
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
     }
 
     .card:hover {
@@ -91,22 +122,66 @@
     }
 
     .stat-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
         color: white;
+    }
+
+    .stat-card .card-title {
+        color: rgba(255,255,255,0.9);
     }
 
     /* Button Styles */
     .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
         border: none;
         border-radius: 10px;
         padding: 10px 20px;
         font-weight: 500;
+        color: white;
     }
 
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        background: linear-gradient(135deg, var(--primary-blue-dark) 0%, var(--primary-blue) 100%);
+    }
+
+    .btn-outline-primary {
+        border: 1px solid var(--primary-blue);
+        color: var(--primary-blue);
+        background: transparent;
+        border-radius: 10px;
+    }
+
+    .btn-outline-primary:hover {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .btn-success {
+        background: var(--success);
+        border: none;
+    }
+
+    .btn-danger {
+        background: var(--danger);
+        border: none;
+    }
+
+    .btn-warning {
+        background: var(--warning);
+        border: none;
+        color: white;
+    }
+
+    .btn-info {
+        background: var(--primary-orange);
+        border: none;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: var(--primary-orange-dark);
     }
 
     /* Table Styles */
@@ -118,8 +193,13 @@
 
     .table thead th {
         background: #f8f9fa;
-        border-bottom: 2px solid #dee2e6;
+        border-bottom: 2px solid var(--border-color);
         font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .table tbody td {
+        color: var(--text-secondary);
     }
 
     /* Timer Styles */
@@ -128,6 +208,97 @@
         font-weight: 700;
         font-family: monospace;
         text-align: center;
+        color: var(--primary-blue);
+    }
+
+    /* Badge Styles */
+    .badge.bg-primary {
+        background: var(--primary-blue) !important;
+    }
+
+    .badge.bg-success {
+        background: var(--success) !important;
+    }
+
+    .badge.bg-danger {
+        background: var(--danger) !important;
+    }
+
+    .badge.bg-warning {
+        background: var(--warning) !important;
+    }
+
+    .badge.bg-info {
+        background: var(--primary-orange) !important;
+    }
+
+    /* Progress Bar */
+    .progress {
+        height: 8px;
+        border-radius: 10px;
+        background-color: var(--border-color);
+    }
+
+    .progress-bar {
+        background: linear-gradient(90deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+        border-radius: 10px;
+    }
+
+    /* Navbar */
+    .navbar {
+        background: rgb(221, 126, 70) !important;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    /* Form Controls */
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    }
+
+    /* Links */
+    a {
+        color: var(--primary-blue);
+        text-decoration: none;
+    }
+
+    a:hover {
+        color: var(--primary-orange);
+    }
+
+    /* Headers */
+   h1, h2, h3, h4, h5, h6 {
+    color: #60a5fa;
+}
+
+
+    .text-muted {
+        color: var(--text-secondary) !important;
+    }
+
+    /* Alert Styles */
+    .alert-success {
+        background-color: #d1fae5;
+        border-color: #a7f3d0;
+        color: #065f46;
+    }
+
+    .alert-danger {
+        background-color: #fee2e2;
+        border-color: #fecaca;
+        color: #991b1b;
+    }
+
+    .alert-warning {
+        background-color: #fed7aa;
+        border-color: #fdba74;
+        color: #9a3412;
+    }
+
+    .alert-info {
+        background-color: #dbeafe;
+        border-color: #bfdbfe;
+        color: #1e40af;
     }
 
     /* Drag and Drop Styles */
@@ -141,7 +312,17 @@
     }
 
     .drag-over {
-        border-top: 3px solid #667eea;
+        border-top: 3px solid var(--primary-orange);
+    }
+
+    /* List Group */
+    .list-group-item {
+        border-color: var(--border-color);
+    }
+
+    .list-group-item.active {
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
+        border-color: var(--primary-blue);
     }
 </style>
 
@@ -154,7 +335,7 @@
     <!-- Sidebar -->
     <nav id="sidebar">
         <div class="sidebar-header text-center">
-            <h3>💪 Workout Remixer</h3>
+            <h3>💪 LiftLab</h3>
             <p>Build. Track. Improve.</p>
         </div>
 
@@ -208,9 +389,9 @@
 
             <div class="ms-auto d-flex align-items-center gap-3">
                 <span class="text-muted">Welcome,</span>
-                <span class="fw-semibold text-primary">{{ user.username }}</span>
+                <span class="fw-semibold" style="color: var(--primary-blue);">{{ user.username }}</span>
                 <div class="vr"></div>
-                <span class="badge bg-success">{{ user.role if user.role else 'Regular User' }}</span>
+                <span class="badge" style="background: var(--primary-yellow);">{{ user.role if user.role else 'Regular User' }}</span>
             </div>
         </nav>
 
@@ -232,13 +413,9 @@
 </div>
 
 <script>
-    const menuToggle = document.getElementById("menu-toggle");
-    if (menuToggle) {
-        menuToggle.addEventListener("click", function () {
-            const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("collapsed");
-        });
-    }
+    document.getElementById("menu-toggle").addEventListener("click", function () {
+        document.getElementById("sidebar").classList.toggle("collapsed");
+    });
 </script>
 
 {% block subpage_scripts %}{% endblock %}

@@ -4,61 +4,61 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <h2 class="fw-bold">Dashboard</h2>
-            <p class="text-muted">Your fitness journey at a glance</p>
+            <h2 class="fw-bold text-white">Dashboard</h2>
+            <p class="text-secondary">Your fitness journey at a glance</p>
         </div>
     </div>
 
     <!-- Stats Cards -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
-            <div class="card stat-card text-white">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 opacity-75">Total Workouts</h6>
-                            <h2 class="mb-0" id="totalWorkouts">0</h2>
+                            <h6 class="mb-1 text-secondary">Total Workouts</h6>
+                            <h2 class="mb-0 text-white" id="totalWorkouts">0</h2>
                         </div>
-                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">fitness_center</span>
+                        <span class="material-symbols-outlined text-primary" style="font-size: 2.5rem;">fitness_center</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 opacity-75">Total Exercises</h6>
-                            <h2 class="mb-0" id="totalExercises">0</h2>
+                            <h6 class="mb-1 text-secondary">Total Exercises</h6>
+                            <h2 class="mb-0 text-white" id="totalExercises">0</h2>
                         </div>
-                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">body_builder</span>
+                        <span class="material-symbols-outlined text-warning" style="font-size: 2.5rem;">body_builder</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 opacity-75">Routines Created</h6>
-                            <h2 class="mb-0" id="totalRoutines">0</h2>
+                            <h6 class="mb-1 text-secondary">Routines Created</h6>
+                            <h2 class="mb-0 text-white" id="totalRoutines">0</h2>
                         </div>
-                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">schedule</span>
+                        <span class="material-symbols-outlined text-info" style="font-size: 2.5rem;">schedule</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="col-md-3 mb-3">
-            <div class="card stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <h6 class="mb-1 opacity-75">This Week</h6>
-                            <h2 class="mb-0" id="workoutsThisWeek">0</h2>
+                            <h6 class="mb-1 text-secondary">This Week</h6>
+                            <h2 class="mb-0 text-white" id="workoutsThisWeek">0</h2>
                         </div>
-                        <span class="material-symbols-outlined" style="font-size: 2.5rem;">calendar_today</span>
+                        <span class="material-symbols-outlined text-success" style="font-size: 2.5rem;">calendar_today</span>
                     </div>
                 </div>
             </div>
@@ -68,10 +68,10 @@
     <!-- Quick Actions -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Quick Actions</h5>
-                    <div class="d-flex gap-3">
+                    <h5 class="card-title fw-bold text-white">Quick Actions</h5>
+                    <div class="d-flex gap-3 flex-wrap">
                         <a href="/app/routines/create" class="btn btn-primary">
                             <span class="material-symbols-outlined me-1">add</span>
                             Create Routine
@@ -80,7 +80,7 @@
                             <span class="material-symbols-outlined me-1">search</span>
                             Browse Exercises
                         </a>
-                        <a href="/app/community" class="btn btn-outline-success">
+                        <a href="/app/community" class="btn btn-outline-warning">
                             <span class="material-symbols-outlined me-1">explore</span>
                             Explore Community
                         </a>
@@ -93,23 +93,23 @@
     <!-- Recent Workouts -->
     <div class="row">
         <div class="col-md-8 mb-4">
-            <div class="card">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Recent Workouts</h5>
+                    <h5 class="card-title fw-bold text-white">Recent Workouts</h5>
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-dark table-hover">
                             <thead>
                                 <tr>
-                                    <th>Date</th>
-                                    <th>Routine</th>
-                                    <th>Duration</th>
-                                    <th>Exercises</th>
-                                    <th>Action</th>
+                                    <th class="text-secondary">Date</th>
+                                    <th class="text-secondary">Routine</th>
+                                    <th class="text-secondary">Duration</th>
+                                    <th class="text-secondary">Exercises</th>
+                                    <th class="text-secondary">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="recentWorkouts">
                                 <tr>
-                                    <td colspan="5" class="text-center text-muted">No workouts yet. Start your first workout!</td>
+                                    <td colspan="5" class="text-center text-secondary">No workouts yet. Start your first workout!</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -120,15 +120,43 @@
 
         <!-- Progress Chart -->
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card bg-dark border-secondary">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Weekly Progress</h5>
+                    <h5 class="card-title fw-bold text-white">Weekly Progress</h5>
                     <canvas id="workoutChart" height="250"></canvas>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .table-dark {
+        background-color: #1e293b;
+    }
+    .table-dark td {
+        color: #cbd5e1;
+    }
+    .btn-outline-warning {
+        color: #f97316;
+        border-color: #f97316;
+    }
+    .btn-outline-warning:hover {
+        background-color: #f97316;
+        color: white;
+    }
+    .text-warning {
+        color: #f97316 !important;
+    }
+    .text-info {
+        color: #3b82f6 !important;
+    }
+    canvas {
+        background-color: #1e293b;
+        border-radius: 10px;
+        padding: 10px;
+    }
+</style>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -142,20 +170,19 @@
             document.getElementById('totalRoutines').textContent = stats.total_routines || 0;
             document.getElementById('workoutsThisWeek').textContent = stats.workouts_this_week || 0;
             
-            // Load recent workouts
             const workoutsResponse = await fetch('/api/workouts/recent');
             const workouts = await workoutsResponse.json();
             
             const tbody = document.getElementById('recentWorkouts');
             if (workouts.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted">No workouts yet. Start your first workout!</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center text-secondary">No workouts yet. Start your first workout!</td></tr>';
             } else {
                 tbody.innerHTML = workouts.map(w => `
                     <tr>
-                        <td>${new Date(w.date).toLocaleDateString()}</td>
-                        <td>${w.routine_name}</td>
-                        <td>${w.duration_minutes} min</td>
-                        <td>${w.exercise_count}</td>
+                        <td class="text-white">${new Date(w.date).toLocaleDateString()}</td>
+                        <td class="text-white">${escapeHtml(w.routine_name)}</td>
+                        <td class="text-white">${w.duration_minutes} min</td>
+                        <td class="text-white">${w.exercise_count || 0}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-primary" onclick="viewWorkout(${w.id})">
                                 View
@@ -165,7 +192,6 @@
                 `).join('');
             }
             
-            // Create chart
             const ctx = document.getElementById('workoutChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
@@ -174,8 +200,13 @@
                     datasets: [{
                         label: 'Workouts',
                         data: stats.workout_counts || [0,0,0,0,0,0,0],
-                        borderColor: '#667eea',
-                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#f97316',
+                        pointBorderColor: '#f97316',
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
                         tension: 0.4,
                         fill: true
                     }]
@@ -185,7 +216,27 @@
                     maintainAspectRatio: true,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            labels: {
+                                color: '#cbd5e1'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            grid: {
+                                color: '#334155'
+                            },
+                            ticks: {
+                                color: '#cbd5e1'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#334155'
+                            },
+                            ticks: {
+                                color: '#cbd5e1'
+                            }
                         }
                     }
                 }
@@ -197,6 +248,13 @@
     
     function viewWorkout(id) {
         window.location.href = `/app/workouts/${id}`;
+    }
+    
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     loadDashboard();
