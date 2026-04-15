@@ -1,190 +1,219 @@
-
 :root {
-    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --success-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-    --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --primary-blue: #3b82f6;
+    --primary-blue-dark: #2563eb;
+    --primary-blue-bright: #60a5fa;
+    --primary-orange: #f97316;
+    --primary-orange-dark: #ea580c;
+    --bg-dark: #1e293b;
+    --bg-sidebar: #0f172a;
+    --bg-main: #0f172a;
+    --card-bg: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
 }
 
-/* Animations */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+h1, h2, h3, h4, h5, h6 {
+    color: var(--primary-blue-bright);
 }
 
-.card {
-    animation: fadeIn 0.5s ease-out;
+a {
+    color: var(--primary-blue);
+    text-decoration: none;
 }
 
-/* Timer Display */
-.timer-display {
-    font-size: 4rem;
-    font-weight: 700;
-    font-family: 'Courier New', monospace;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #555;
-}
-
-/* Loading Spinner */
-.spinner-border {
-    width: 3rem;
-    height: 3rem;
-}
-
-/* Toast Notifications */
-.toast-container {
-    z-index: 1050;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    #sidebar {
-        margin-left: -280px;
-        position: fixed;
-        z-index: 1000;
-    }
-    
-    #sidebar.collapsed {
-        margin-left: 0;
-    }
-    
-    .timer-display {
-        font-size: 2.5rem;
-    }
-}
-
-/* Exercise Cards */
-.exercise-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-
-/* Progress Bars */
-.progress {
-    height: 8px;
-    border-radius: 10px;
-}
-
-.progress-bar {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    transition: width 0.3s ease;
-}
-
-/* Form Controls */
-.form-control:focus, .form-select:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-}
-
-/* Buttons */
-.btn {
-    border-radius: 10px;
-    font-weight: 500;
-    transition: all 0.3s;
+a:hover {
+    color: var(--primary-orange);
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-orange) 100%);
     border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-weight: 500;
+    color: white;
+    transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-}
-/* Mobile Responsive Styles */
-* {
-    box-sizing: border-box;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
 }
 
-img, video, canvas {
-    max-width: 100%;
-    height: auto;
+.btn-outline-primary {
+    border: 1px solid var(--primary-blue);
+    color: var(--primary-blue);
+    background: transparent;
+    border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
-/* Better touch targets on mobile */
+.btn-outline-primary:hover {
+    background: var(--primary-blue);
+    color: white;
+}
+
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.form-control, .form-select {
+    background-color: #0f172a;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: #1e293b;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25);
+    color: var(--text-primary);
+}
+
+.table {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.table thead th {
+    background-color: var(--bg-dark);
+    border-bottom-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.table tbody td {
+    border-bottom-color: var(--border-color);
+}
+
+.badge.bg-primary {
+    background: var(--primary-blue) !important;
+}
+
+.badge.bg-success {
+    background: var(--success) !important;
+}
+
+.badge.bg-danger {
+    background: var(--danger) !important;
+}
+
+.badge.bg-warning {
+    background: var(--warning) !important;
+}
+
+.progress {
+    background-color: var(--border-color);
+    border-radius: 10px;
+    height: 8px;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, var(--primary-blue), var(--primary-orange));
+    border-radius: 10px;
+}
+
+.timer-display {
+    font-size: 4rem;
+    font-weight: bold;
+    font-family: monospace;
+    color: var(--primary-blue);
+    text-align: center;
+}
+
+/* Loading spinner */
+.spinner-border {
+    color: var(--primary-blue);
+}
+
+/* Toast notifications */
+.toast-container {
+    z-index: 1050;
+}
+
+.toast {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+}
+
+.empty-state .material-symbols-outlined {
+    font-size: 64px;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
-    button, 
-    .btn,
-    a,
-    .nav-link,
-    .clickable {
-        min-height: 44px;
-        min-width: 44px;
-    }
-    
-    input, 
-    select, 
-    textarea {
-        font-size: 16px !important;
-    }
-    
-    .modal-content {
-        margin: 10px;
-        max-height: 90vh;
-        overflow-y: auto;
-    }
-    
-    .toast-container {
-        bottom: 10px;
-        right: 10px;
-        left: 10px;
-    }
-    
-    .toast {
-        width: calc(100% - 20px);
-        max-width: none;
-    }
-}
-
-/* Landscape mode optimization */
-@media (max-width: 900px) and (orientation: landscape) {
-    #sidebar {
-        overflow-y: auto;
-        max-height: 100vh;
-    }
-    
     .timer-display {
-        font-size: 1.5rem;
+        font-size: 2rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    .table-responsive {
+        font-size: 0.8rem;
     }
 }
 
-/* Tablet styles */
-@media (min-width: 769px) and (max-width: 1024px) {
-    .stat-card h2 {
-        font-size: 1.8rem;
+@media (max-width: 480px) {
+    .container-fluid {
+        padding: 0.5rem;
+    }
+    
+    .stat-number {
+        font-size: 1.2rem;
+    }
+    
+    .btn-group {
+        flex-wrap: wrap;
+        gap: 5px;
     }
     
     .btn-group .btn {
-        font-size: 0.75rem;
-        padding: 4px 8px;
-    }
-    
-    .exercise-card {
-        min-height: 180px;
+        flex: 1;
+        min-width: 70px;
+        font-size: 0.7rem;
     }
 }
