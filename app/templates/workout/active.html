@@ -124,31 +124,6 @@
         font-size: 1.2rem;
         vertical-align: middle;
     }
-    @media (max-width: 768px) {
-    .timer-display {
-        font-size: 2rem;
-    }
-    
-    .workout-controls {
-        flex-direction: column;
-        gap: 8px;
-    }
-    
-    .workout-controls .btn {
-        width: 100%;
-        margin-bottom: 5px;
-    }
-    
-    .current-exercise-stats {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .current-exercise-stats .col-md-4 {
-        width: 100%;
-        margin-bottom: 8px;
-    }
-}
 </style>
 
 <script>
@@ -166,6 +141,43 @@
     let restSecondsLeft = 0;
     let completedSets = [];
     let workoutStartTime = null;
+
+    function showConfetti() {
+        const colors = ['#3b82f6', '#f97316', '#10b981', '#ef4444', '#8b5cf6', '#f59e0b', '#ec4899'];
+        
+        for (let i = 0; i < 150; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.position = 'fixed';
+            confetti.style.width = Math.random() * 8 + 4 + 'px';
+            confetti.style.height = Math.random() * 8 + 4 + 'px';
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = Math.random() * window.innerWidth + 'px';
+            confetti.style.top = '-20px';
+            confetti.style.borderRadius = '50%';
+            confetti.style.pointerEvents = 'none';
+            confetti.style.zIndex = '9999';
+            confetti.style.opacity = Math.random() * 0.7 + 0.3;
+            confetti.style.animation = `fall ${Math.random() * 2 + 2}s linear forwards`;
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 3000);
+        }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes fall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
 
     async function loadWorkout() {
         try {
@@ -417,8 +429,11 @@
             });
             
             if (response.ok) {
+                showConfetti();
                 alert(`🎉 Great job! Workout completed in ${Math.floor(durationSeconds / 60)} minutes and ${durationSeconds % 60} seconds! 🎉`);
-                window.location.href = '/app/dashboard';
+                setTimeout(() => {
+                    window.location.href = '/app/dashboard';
+                }, 2000);
             } else {
                 alert('Workout saved! Well done! 🎉');
                 window.location.href = '/app/dashboard';
