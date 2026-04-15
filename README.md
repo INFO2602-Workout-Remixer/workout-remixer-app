@@ -3,8 +3,8 @@
 ## Group Members
 | Name | Role | GitHub |
 |------|------|--------|
-| Deron | Lead/DevOps | @deron |
-| Alex | UI Design | @alex |
+| Deron | DevOps | @deron |
+| Alex | Lead/UI Design | @alex |
 | Aiden | Marketing | @aiden |
 
 ## Application Title
