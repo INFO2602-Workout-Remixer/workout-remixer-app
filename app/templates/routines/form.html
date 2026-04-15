@@ -12,11 +12,11 @@
                     <form id="routineForm">
                         <div class="mb-3">
                             <label class="form-label text-white">Routine Name</label>
-                            <input type="text" class="form-control bg-white text-dark" id="name" required style="background-color: white !important; color: black !important;">
+                            <input type="text" class="form-control" id="name" required style="background-color: white !important; color: black !important;">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white">Description</label>
-                            <textarea class="form-control bg-white text-dark" id="description" rows="3" style="background-color: white !important; color: black !important;"></textarea>
+                            <textarea class="form-control" id="description" rows="3" style="background-color: white !important; color: black !important;"></textarea>
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="is_public">
@@ -47,12 +47,12 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <select id="exerciseSelect" class="form-select mb-3 bg-white text-dark" style="background-color: white !important; color: black !important;">
+                <select id="exerciseSelect" class="form-select mb-3" style="background-color: white !important; color: black !important;">
                     <option value="">Loading exercises...</option>
                 </select>
-                <input type="number" id="sets" class="form-control mb-2 bg-white text-dark" placeholder="Sets" value="3" style="background-color: white !important; color: black !important;">
-                <input type="number" id="reps" class="form-control mb-2 bg-white text-dark" placeholder="Reps" value="10" style="background-color: white !important; color: black !important;">
-                <input type="number" id="rest_seconds" class="form-control mb-2 bg-white text-dark" placeholder="Rest (seconds)" value="60" style="background-color: white !important; color: black !important;">
+                <input type="number" id="sets" class="form-control mb-2" placeholder="Sets" value="3" style="background-color: white !important; color: black !important;">
+                <input type="number" id="reps" class="form-control mb-2" placeholder="Reps" value="10" style="background-color: white !important; color: black !important;">
+                <input type="number" id="rest_seconds" class="form-control mb-2" placeholder="Rest (seconds)" value="60" style="background-color: white !important; color: black !important;">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -86,7 +86,7 @@
             }
             
             select.innerHTML = '<option value="">Select Exercise</option>' + 
-                data.map(e => `<option value="${e.id}">${e.name} (${e.muscle_group})</option>`).join('');
+                data.map(e => `<option value="${e.id}" style="color: black;">${e.name} (${e.muscle_group})</option>`).join('');
         } catch (error) {
             console.error('Error loading exercises:', error);
             document.getElementById('exerciseSelect').innerHTML = '<option value="">Error loading exercises. Make sure you have added exercises.</option>';
@@ -141,8 +141,8 @@
         container.innerHTML = exercises.map((ex, i) => `
             <div class="alert alert-secondary d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>${i + 1}. ${ex.name}</strong><br>
-                    <small>${ex.sets} sets × ${ex.reps} reps | Rest: ${ex.rest_seconds}s</small>
+                    <strong style="color: black;">${i + 1}. ${ex.name}</strong><br>
+                    <small style="color: #555;">${ex.sets} sets × ${ex.reps} reps | Rest: ${ex.rest_seconds}s</small>
                 </div>
                 <button class="btn btn-sm btn-danger" onclick="removeExercise(${i})">Remove</button>
             </div>
