@@ -1,6 +1,44 @@
 {% extends "authenticated-base.html" %}
 
 {% block subpage_content %}
+<style>
+    .form-control-custom {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .form-control-custom:focus {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.25) !important;
+    }
+    .form-select-custom {
+        background-color: #e2e8f0 !important;
+        color: #1e293b !important;
+        border: 1px solid #cbd5e1 !important;
+    }
+    .form-select-custom:focus {
+        background-color: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #3b82f6 !important;
+    }
+    .exercise-item-custom {
+        background-color: #f1f5f9 !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #1e293b !important;
+    }
+    .exercise-item-custom strong {
+        color: #1e293b !important;
+    }
+    .exercise-item-custom small {
+        color: #475569 !important;
+    }
+    .modal-body-custom {
+        background-color: #f8fafc;
+    }
+</style>
+
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -12,11 +50,11 @@
                     <form id="routineForm">
                         <div class="mb-3">
                             <label class="form-label text-white">Routine Name</label>
-                            <input type="text" class="form-control" id="name" required style="background-color: white !important; color: black !important;">
+                            <input type="text" class="form-control form-control-custom" id="name" required placeholder="e.g., Full Body Workout">
                         </div>
                         <div class="mb-3">
                             <label class="form-label text-white">Description</label>
-                            <textarea class="form-control" id="description" rows="3" style="background-color: white !important; color: black !important;"></textarea>
+                            <textarea class="form-control form-control-custom" id="description" rows="3" placeholder="Describe your workout routine..."></textarea>
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="is_public">
@@ -46,13 +84,13 @@
                 <h5 class="modal-title">Add Exercise</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body">
-                <select id="exerciseSelect" class="form-select mb-3" style="background-color: white !important; color: black !important;">
+            <div class="modal-body modal-body-custom">
+                <select id="exerciseSelect" class="form-select form-select-custom mb-3">
                     <option value="">Loading exercises...</option>
                 </select>
-                <input type="number" id="sets" class="form-control mb-2" placeholder="Sets" value="3" style="background-color: white !important; color: black !important;">
-                <input type="number" id="reps" class="form-control mb-2" placeholder="Reps" value="10" style="background-color: white !important; color: black !important;">
-                <input type="number" id="rest_seconds" class="form-control mb-2" placeholder="Rest (seconds)" value="60" style="background-color: white !important; color: black !important;">
+                <input type="number" id="sets" class="form-control form-control-custom mb-2" placeholder="Sets" value="3">
+                <input type="number" id="reps" class="form-control form-control-custom mb-2" placeholder="Reps" value="10">
+                <input type="number" id="rest_seconds" class="form-control form-control-custom mb-2" placeholder="Rest (seconds)" value="60">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -86,7 +124,7 @@
             }
             
             select.innerHTML = '<option value="">Select Exercise</option>' + 
-                data.map(e => `<option value="${e.id}" style="color: black;">${e.name} (${e.muscle_group})</option>`).join('');
+                data.map(e => `<option value="${e.id}" style="color: #1e293b;">${e.name} (${e.muscle_group})</option>`).join('');
         } catch (error) {
             console.error('Error loading exercises:', error);
             document.getElementById('exerciseSelect').innerHTML = '<option value="">Error loading exercises. Make sure you have added exercises.</option>';
@@ -134,15 +172,15 @@
     function renderExercises() {
         const container = document.getElementById('exercisesList');
         if (exercises.length === 0) {
-            container.innerHTML = '<p class="text-muted">No exercises added yet. Click "Add Exercise" to get started.</p>';
+            container.innerHTML = '<p class="text-white-50">No exercises added yet. Click "Add Exercise" to get started.</p>';
             return;
         }
         
         container.innerHTML = exercises.map((ex, i) => `
-            <div class="alert alert-secondary d-flex justify-content-between align-items-center">
+            <div class="alert exercise-item-custom d-flex justify-content-between align-items-center">
                 <div>
-                    <strong style="color: black;">${i + 1}. ${ex.name}</strong><br>
-                    <small style="color: #555;">${ex.sets} sets × ${ex.reps} reps | Rest: ${ex.rest_seconds}s</small>
+                    <strong>${i + 1}. ${ex.name}</strong><br>
+                    <small>${ex.sets} sets × ${ex.reps} reps | Rest: ${ex.rest_seconds}s</small>
                 </div>
                 <button class="btn btn-sm btn-danger" onclick="removeExercise(${i})">Remove</button>
             </div>
